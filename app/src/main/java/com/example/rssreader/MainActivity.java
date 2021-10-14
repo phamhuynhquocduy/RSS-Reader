@@ -1,17 +1,35 @@
 package com.example.rssreader;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -40,36 +58,38 @@ import static java.nio.charset.StandardCharsets.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnFetchFeed;
-    private EditText edtLink;
     private ArrayList<RssFeedModel> mFeedModelList;
     private RecyclerView recyclerView;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnFetchFeed = findViewById(R.id.btnFetchFeed);
-        edtLink = findViewById(R.id.edtLink);
         recyclerView = findViewById(R.id.recyclerView);
+        navigationView = findViewById(R.id.navigationview);
+        toolbar = findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.drawerLayout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFeedModelList = new ArrayList<RssFeedModel>();
 
-        btnFetchFeed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doStuff();
-            }
-        });
+        //Setting toolbar
+        setSupportActionBar(toolbar);
+        setToolbar();
+        //Set up navigation drawer
+        setUpNavDrawer();
+
     }
-    private void doStuff(){
+    private void doStuff(EditText editText){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 //do your work
-                String urlLink = edtLink.getText().toString();
+                String urlLink = editText.getText().toString();
                 try {
                     //if not enter http or https it will be added
                     if(!urlLink.startsWith("http://") && !urlLink.startsWith("https://"))
@@ -125,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             catch (Exception e){
         }
     }
+
     private String getValue(Element element, String name ){
         NodeList nodeList = element.getElementsByTagName(name);
         return this.getTextNodeValue(nodeList.item(0));
@@ -143,5 +164,62 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return "";
+    }
+
+    private void setUpNavDrawer() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                menuItem.setChecked(true);
+                drawerLayout.closeDrawers();
+                final int menuItemId = menuItem.getItemId();
+                switch (menuItemId) {
+                    case R.id.navigation_add:
+                        final Dialog dialog = new Dialog(MainActivity.this);
+                        dialog.setContentView(R.layout.layout_dialog_add);
+                        Button button = dialog.findViewById(R.id.buttonSubmit);
+                        ImageButton imageButton = dialog.findViewById(R.id.imgBtnDismiss);
+                        EditText editText = dialog.findViewById(R.id.edtURL);
+
+                        //Custom width dialog
+                        int width = (int)(getResources().getDisplayMetrics().widthPixels);
+                        dialog.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        imageButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                doStuff(editText);
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        return true;
+                    case R.id.navigation_save:
+                        return true;
+                    case R.id.navigation_log_out:
+                    default: {
+                        return false;
+                    }
+                }
+            }
+        });
+    }
+    public  void setToolbar(){
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(" ");
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24_white);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
     }
 }

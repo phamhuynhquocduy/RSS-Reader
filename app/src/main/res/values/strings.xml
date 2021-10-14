@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">RSSReader</string>
+    <string name="title_save">Dữ liệu RSS đã lưu</string>
+    <string name="title_logout">Đăng xuất</string>
+    <string name="title_add">Thêm nguồn dữ liệu RSS</string>
 </resources>
