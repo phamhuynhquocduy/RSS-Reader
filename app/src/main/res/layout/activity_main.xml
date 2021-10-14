@@ -22,11 +22,33 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_background">
             </androidx.appcompat.widget.Toolbar>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginHorizontal="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_feed_48_gray">
+                    </ImageView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Không có bản tin"
+                        android:textSize="18sp">
+                    </TextView>
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationview"

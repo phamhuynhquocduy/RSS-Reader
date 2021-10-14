@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -29,6 +30,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.CharacterData;
@@ -204,6 +209,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_save:
                         return true;
                     case R.id.navigation_log_out:
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return false;
                     default: {
                         return false;
                     }
@@ -211,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public  void setToolbar(){
+    public void setToolbar(){
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(" ");
         toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24_white);
