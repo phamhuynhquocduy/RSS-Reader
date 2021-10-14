@@ -54,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
                 account = task.getResult(ApiException.class);
                 saveLoginState(String.valueOf(account.getIdToken()));
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                intent.putExtra("name",account.getFamilyName());
+                intent.putExtra("image",account.getPhotoUrl());
                 startActivity(intent);
                 finish();
                 Toast.makeText(LoginActivity.this,"Đăng nhập thành công",Toast.LENGTH_LONG).show();
@@ -73,6 +75,9 @@ public class LoginActivity extends AppCompatActivity {
             // Keep login
             Log.d("LogOut","KeepAccount");
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+            intent.putExtra("name",account.getDisplayName());
+            account.getPhotoUrl();
+            intent.putExtra("image",String.valueOf(account.getPhotoUrl()));
             startActivity(intent);
             finish();
         } else {
@@ -81,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("logout","Logout");
+                            Log.d("LogOut","Logout");
                         }
                     });
         }

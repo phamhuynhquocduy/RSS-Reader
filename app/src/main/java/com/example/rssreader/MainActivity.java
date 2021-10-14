@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -45,6 +48,7 @@ import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
+    private ImageView imagePhoto;
+    private TextView tvName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawerLayout);
 
+        View header = navigationView.getHeaderView(0);
+        tvName = header.findViewById(R.id.main_fullname);
+        imagePhoto =header.findViewById(R.id.main_profile_image);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFeedModelList = new ArrayList<RssFeedModel>();
 
@@ -89,6 +99,16 @@ public class MainActivity extends AppCompatActivity {
         //Set up navigation drawer
         setUpNavDrawer();
 
+        Intent intent = getIntent();
+        //Update profile user
+        tvName.setText("Xin chào "+ intent.getStringExtra("name"));
+        if(intent.getStringExtra("image")!=null){
+            Uri myUri = Uri.parse(intent.getStringExtra("image"));
+            Picasso.get().load(myUri)
+                    .placeholder(R.drawable.placeholder_user)
+                    .error(R.drawable.error)
+                    .into(imagePhoto);
+        }
     }
     private void doStuff(EditText editText){
         new Thread(new Runnable() {
@@ -111,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //do your work after the job is finished
-                        //fill recyclerView
+                        //Do your work after the job is finished
+                        //Fill recyclerView
                         Log.d("list",mFeedModelList.toString());
                         recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
                     }
@@ -229,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void setToolbar(){
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(" ");
@@ -240,9 +261,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private void saveURL(){
 
     }
+
     private void saveLoginState(String id_token){
         SharedPreferences sharedpreferences = getSharedPreferences("Status login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
