@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -185,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                         Button button = dialog.findViewById(R.id.buttonSubmit);
                         ImageButton imageButton = dialog.findViewById(R.id.imgBtnDismiss);
                         EditText editText = dialog.findViewById(R.id.edtURL);
+                        CheckBox checkBox = dialog.findViewById(R.id.checkBox);
 
                         //Custom width dialog
                         int width = (int)(getResources().getDisplayMetrics().widthPixels);
@@ -197,20 +199,27 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
+
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 doStuff(editText);
+                                if(checkBox.isChecked()){
+                                    saveURL();
+                                }
                                 dialog.dismiss();
                             }
                         });
                         dialog.show();
-                        return true;
+                        return false;
                     case R.id.navigation_save:
-                        return true;
+                        Intent intentUrl = new Intent(MainActivity.this,UrlListActivity.class);
+                        startActivity(intentUrl);
+                        return false;
                     case R.id.navigation_log_out:
-                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                        startActivity(intent);
+                        Intent intentLogout = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intentLogout);
+                        saveLoginState(null);
                         finish();
                         return false;
                     default: {
@@ -230,5 +239,15 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+    }
+    private void saveURL(){
+
+    }
+    private void saveLoginState(String id_token){
+        SharedPreferences sharedpreferences = getSharedPreferences("Status login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("Google", id_token);
+        editor.commit();
+
     }
 }
