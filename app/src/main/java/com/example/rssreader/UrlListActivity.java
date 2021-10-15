@@ -47,6 +47,10 @@ public class UrlListActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         arrayList = new ArrayList<>();
 
+        //Toolbar
+        setSupportActionBar(toolbar);
+        setActionBar();
+
         db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
         getUser(intent.getStringExtra("email"));
