@@ -2,6 +2,7 @@ package com.example.rssreader;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,8 +16,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,8 +33,10 @@ import static android.content.ContentValues.TAG;
 
 public class UrlListActivity extends AppCompatActivity {
     private ListView listView;
+    private Toolbar toolbar;
     private ArrayList<String> arrayList;
     private ArrayAdapter adapter;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +44,32 @@ public class UrlListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_url_list);
 
         listView = findViewById(R.id.list);
+        toolbar = findViewById(R.id.toolbar);
         arrayList = new ArrayList<>();
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        DocumentReference docRef = db.collection("users").document("quocduy02082k@gmail.com");
+        db = FirebaseFirestore.getInstance();
+        Intent intent = getIntent();
+        getUser(intent.getStringExtra("email"));
+    }
+    private void getAllUser(){
+                //Get All User
+                db.collection("users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("AllData",String.valueOf(document.getData()));
+                            }
+                        } else {
+                            Log.d("AllData",String.valueOf(task.getException()));
+                        }
+                    }
+                });
+    }
+    private void getUser(String email){
+        DocumentReference docRef = db.collection("users").document(email);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -64,39 +90,16 @@ public class UrlListActivity extends AppCompatActivity {
                 }
             }
         });
-        //Get All User
-        db.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("AllData",String.valueOf(document.getData()));
-                            }
-                        } else {
-                            Log.d("AllData",String.valueOf(task.getException()));
-                        }
-                    }
-                });
-        arrayList.add("https://vnexpress.net/rss/suc-khoe.rss");
-        Map<String, Object> user = new HashMap<>();
-        user.put("url",arrayList);
-
-//        db.collection("users").document("quocduy02082k@gmail.com")
-//                .set(user)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.d("AddData", "DocumentSnapshot successfully written!");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d("Error writing document", e.getMessage());
-//                    }
-//                });
-
+    }
+    private void setActionBar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }

@@ -36,8 +36,13 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.CharacterData;
@@ -56,7 +61,9 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView imagePhoto;
     private TextView tvName;
-
+    private FirebaseFirestore db;
+    private String name,image,email;
+    private ArrayList<String> arrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +102,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFeedModelList = new ArrayList<RssFeedModel>();
 
+        //Init array list
+        arrayList = new ArrayList<>();
+
+        db = FirebaseFirestore.getInstance();
+
         //Setting toolbar
         setSupportActionBar(toolbar);
         setToolbar();
@@ -100,10 +114,14 @@ public class MainActivity extends AppCompatActivity {
         setUpNavDrawer();
 
         Intent intent = getIntent();
+        name = intent.getStringExtra("name");
+        image = intent.getStringExtra("image");
+        email = intent.getStringExtra("email");
+        Log.d("email",email);
         //Update profile user
-        tvName.setText("Xin chào "+ intent.getStringExtra("name"));
+        tvName.setText("Xin chào "+ name);
         if(intent.getStringExtra("image")!=null){
-            Uri myUri = Uri.parse(intent.getStringExtra("image"));
+            Uri myUri = Uri.parse(image);
             Picasso.get().load(myUri)
                     .placeholder(R.drawable.placeholder_user)
                     .error(R.drawable.error)
@@ -196,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                menuItem.setChecked(true);
                 drawerLayout.closeDrawers();
                 final int menuItemId = menuItem.getItemId();
                 switch (menuItemId) {
@@ -218,14 +235,12 @@ public class MainActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                         });
-
-
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 doStuff(editText);
                                 if(checkBox.isChecked()){
-                                    saveURL();
+                                    saveURL(editText.getText().toString());
                                 }
                                 dialog.dismiss();
                             }
@@ -234,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     case R.id.navigation_save:
                         Intent intentUrl = new Intent(MainActivity.this,UrlListActivity.class);
+                        intentUrl.putExtra("email",email);
                         startActivity(intentUrl);
                         return false;
                     case R.id.navigation_log_out:
@@ -262,8 +278,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void saveURL(){
+    //Save URL
+    private void saveURL(String url){
+        getDocument(email);
+        arrayList.add(url);
 
+        Map<String, Object> user = new HashMap<>();
+        user.put("url",arrayList);
+
+        db.collection("users").document(String.valueOf(email))
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("AddData", "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Error writing document", e.getMessage());
+                    }
+                });
     }
 
     private void saveLoginState(String id_token){
@@ -272,5 +308,26 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("Google", id_token);
         editor.commit();
 
+    }
+
+    private void getDocument(String document){
+        DocumentReference docRef = db.collection("users").document(document);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        ArrayList<String> group = (ArrayList<String>) document.get("url");
+                        arrayList.addAll(group);
+                        Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
+                    } else {
+                        Log.d("DocumentSnapshot data: ","No such document");
+                    }
+                } else {
+                    Log.d(TAG, "Get Failed With ", task.getException());
+                }
+            }
+        });
     }
 }

@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                 intent.putExtra("name",account.getFamilyName());
                 intent.putExtra("image",account.getPhotoUrl());
+                intent.putExtra("email",account.getEmail());
                 startActivity(intent);
                 finish();
                 Toast.makeText(LoginActivity.this,"Đăng nhập thành công",Toast.LENGTH_LONG).show();
@@ -76,8 +77,8 @@ public class LoginActivity extends AppCompatActivity {
             Log.d("LogOut","KeepAccount");
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
             intent.putExtra("name",account.getDisplayName());
-            account.getPhotoUrl();
             intent.putExtra("image",String.valueOf(account.getPhotoUrl()));
+            intent.putExtra("email",account.getEmail());
             startActivity(intent);
             finish();
         } else {
