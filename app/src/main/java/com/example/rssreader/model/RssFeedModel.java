@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.example.rssreader.model;
 
 import java.io.Serializable;
 

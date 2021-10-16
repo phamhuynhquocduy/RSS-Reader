@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.example.rssreader.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.example.rssreader.R;
 import com.monstertechno.adblocker.AdBlockerWebView;
 import com.monstertechno.adblocker.util.AdBlocker;
 

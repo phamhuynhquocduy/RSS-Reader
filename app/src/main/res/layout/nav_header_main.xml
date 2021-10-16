@@ -14,7 +14,7 @@
     android:orientation="vertical"
     android:gravity="bottom"
     android:background="@drawable/custom_background"
-    tools:context=".MainActivity">
+    tools:context=".view.MainActivity">
     <FrameLayout
         android:id="@+id/framelayout"
         android:layout_width="wrap_content"

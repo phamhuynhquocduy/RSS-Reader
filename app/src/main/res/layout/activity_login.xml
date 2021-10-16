@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/custom_background"
-    tools:context=".LoginActivity">
+    tools:context=".view.LoginActivity">
 
-    <ImageView
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:src="@drawable/logo_and_title">
-    </ImageView>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Đăng nhập"
-        android:textColor="@color/black"
-        android:textSize="32dp"
-        android:layout_gravity="center">
-    </TextView>
-    <com.google.android.gms.common.SignInButton
+        android:layout_height="400dp"
+        android:layout_marginTop="128dp"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonGoogle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:layout_marginVertical="36dp"/>
+        android:layout_marginVertical="36dp"
+        android:background="@drawable/custom_button_google"
+        android:drawableLeft="@drawable/icon_google"
+        android:paddingLeft="16sp"
+        android:text="Đăng nhập Google"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

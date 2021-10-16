@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.example.rssreader.adapter;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rssreader.view.DetailFeedActivity;
+import com.example.rssreader.R;
+import com.example.rssreader.model.RssFeedModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -53,7 +56,7 @@ public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.
         holder.rssFeedView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent(v.getContext(),DetailFeedActivity.class);
+                Intent intent= new Intent(v.getContext(), DetailFeedActivity.class);
                 intent.putExtra("link",rssFeedModel.getLink());
                 v.getContext().startActivity(intent);
             }

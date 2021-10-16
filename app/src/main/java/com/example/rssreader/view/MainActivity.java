@@ -1,7 +1,6 @@
-package com.example.rssreader;
+package com.example.rssreader.view;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -13,15 +12,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Xml;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +24,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.example.rssreader.R;
+import com.example.rssreader.adapter.RssFeedListAdapter;
+import com.example.rssreader.model.RssFeedModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,19 +43,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +57,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import static android.content.ContentValues.TAG;
-import static java.nio.charset.StandardCharsets.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -248,12 +233,12 @@ public class MainActivity extends AppCompatActivity {
                         dialog.show();
                         return false;
                     case R.id.navigation_save:
-                        Intent intentUrl = new Intent(MainActivity.this,UrlListActivity.class);
+                        Intent intentUrl = new Intent(MainActivity.this, UrlListActivity.class);
                         intentUrl.putExtra("email",email);
                         startActivity(intentUrl);
                         return false;
                     case R.id.navigation_log_out:
-                        Intent intentLogout = new Intent(MainActivity.this,LoginActivity.class);
+                        Intent intentLogout = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intentLogout);
                         saveLoginState(null);
                         finish();
