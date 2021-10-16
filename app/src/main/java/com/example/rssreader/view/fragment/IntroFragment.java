@@ -1,4 +1,4 @@
-package com.example.rssreader.view;
+package com.example.rssreader.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;

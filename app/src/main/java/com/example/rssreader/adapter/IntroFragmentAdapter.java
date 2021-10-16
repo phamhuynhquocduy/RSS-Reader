@@ -3,15 +3,11 @@ package com.example.rssreader.adapter;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.rssreader.view.IntroFragment;
-import com.example.rssreader.view.IntroFragment2;
-import com.example.rssreader.view.IntroFragment3;
-
-import java.util.ArrayList;
+import com.example.rssreader.view.fragment.IntroFragment;
+import com.example.rssreader.view.fragment.IntroFragment2;
+import com.example.rssreader.view.fragment.IntroFragment3;
 
 public class IntroFragmentAdapter extends FragmentStateAdapter {
 

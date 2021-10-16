@@ -6,6 +6,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,11 +28,12 @@ import com.google.android.gms.tasks.Task;
 
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
-    public static int RC_SIGN_IN =123;
+    public static int RC_SIGN_IN = 123;
     private Button buttonGoogle;
-    public static  GoogleSignInAccount account;
+    public static GoogleSignInAccount account;
     private ViewPager2 viewPager;
     private IntroFragmentAdapter introFragmentAdapter;
+    private ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,16 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         //ViewPager
-        viewPager =  findViewById(R.id.pager);
-        introFragmentAdapter =  new IntroFragmentAdapter(this);
+        viewPager = findViewById(R.id.pager);
+        introFragmentAdapter = new IntroFragmentAdapter(this);
         viewPager.setAdapter(introFragmentAdapter);
+
+        //Progress dialog
+        mProgress = new ProgressDialog(this);
+        mProgress.setTitle("Đang tải...");
+        mProgress.setMessage("Xin chờ một chút...");
+        mProgress.setCancelable(false);
+        mProgress.setIndeterminate(true);
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -54,11 +63,13 @@ public class LoginActivity extends AppCompatActivity {
         buttonGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProgress.show();
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityIfNeeded(signInIntent, RC_SIGN_IN);
             }
         });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -66,34 +77,36 @@ public class LoginActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In success
+                mProgress.dismiss();
                 account = task.getResult(ApiException.class);
                 saveLoginState(String.valueOf(account.getIdToken()));
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("name",account.getFamilyName());
-                intent.putExtra("image",account.getPhotoUrl());
-                intent.putExtra("email",account.getEmail());
+                intent.putExtra("name", account.getFamilyName());
+                intent.putExtra("image", account.getPhotoUrl());
+                intent.putExtra("email", account.getEmail());
                 startActivity(intent);
                 finish();
-                Toast.makeText(LoginActivity.this,"Đăng nhập thành công",Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
             } catch (ApiException e) {
                 // Google Sign In fail
-                Log.d("FailConnect",e.getMessage());
-                Toast.makeText(LoginActivity.this,"Đăng nhập thất bại",Toast.LENGTH_LONG).show();
+                Log.d("FailConnect", e.getMessage());
+                Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_LONG).show();
             }
         }
     }
-    private  void logOut() {
+
+    private void logOut() {
         account = GoogleSignIn.getLastSignedInAccount(LoginActivity.this);
         SharedPreferences sharedpreferences = getSharedPreferences("Status login", Context.MODE_PRIVATE);
-        String token = sharedpreferences.getString("Google",null);
+        String token = sharedpreferences.getString("Google", null);
         //User want logout
-        if (token!=null) {
+        if (token != null) {
             // Keep login
-            Log.d("LogOut","KeepAccount");
-            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-            intent.putExtra("name",account.getDisplayName());
-            intent.putExtra("image",String.valueOf(account.getPhotoUrl()));
-            intent.putExtra("email",account.getEmail());
+            Log.d("LogOut", "KeepAccount");
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("name", account.getDisplayName());
+            intent.putExtra("image", String.valueOf(account.getPhotoUrl()));
+            intent.putExtra("email", account.getEmail());
             startActivity(intent);
             finish();
         } else {
@@ -102,12 +115,13 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("LogOut","Logout");
+                            Log.d("LogOut", "Logout");
                         }
                     });
         }
     }
-    private void saveLoginState(String id_token){
+
+    private void saveLoginState(String id_token) {
         SharedPreferences sharedpreferences = getSharedPreferences("Status login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("Google", id_token);
