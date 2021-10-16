@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
-    private ImageView imagePhoto;
-    private TextView tvName;
+    private ImageView imagePhoto,imageFeed;
+    private TextView tvName,tvFeed;
     private FirebaseFirestore db;
     private String name,image,email;
     private ArrayList<String> arrayList;
@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigationview);
         toolbar = findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawerLayout);
+        imageFeed =findViewById(R.id.imageFeed);
+        tvFeed =findViewById(R.id.tvFeed);
 
         View header = navigationView.getHeaderView(0);
         tvName = header.findViewById(R.id.main_fullname);
@@ -137,6 +139,15 @@ public class MainActivity extends AppCompatActivity {
                         //Do your work after the job is finished
                         //Fill recyclerView
                         Log.d("list",mFeedModelList.toString());
+
+                        // If list feed more than 0
+                        if(mFeedModelList.size()>0){
+                            tvFeed.setVisibility(View.GONE);
+                            imageFeed.setVisibility(View.GONE);
+                        }else{
+                            tvFeed.setVisibility(View.VISIBLE);
+                            imageFeed.setVisibility(View.VISIBLE);
+                        }
                         recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
                     }
                 });
