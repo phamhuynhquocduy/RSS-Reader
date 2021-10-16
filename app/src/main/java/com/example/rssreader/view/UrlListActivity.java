@@ -1,11 +1,18 @@
 package com.example.rssreader.view;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
+import com.example.rssreader.adapter.UrlListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,26 +25,32 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
 public class UrlListActivity extends AppCompatActivity {
-    private ListView listView;
+    private RecyclerView recyclerView;
     private Toolbar toolbar;
     private ArrayList<String> arrayList;
-    private ArrayAdapter adapter;
+    private UrlListAdapter adapter;
     private FirebaseFirestore db;
+    private TextView textView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_url_list);
 
-        listView = findViewById(R.id.list);
+        recyclerView = findViewById(R.id.recyclerView);
         toolbar = findViewById(R.id.toolbar);
+        textView = findViewById(R.id.tvUrl);
+        imageView=findViewById(R.id.imageUrl);
         arrayList = new ArrayList<>();
 
         //Toolbar
@@ -46,6 +59,7 @@ public class UrlListActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
+        // Get link url of user
         getUser(intent.getStringExtra("email"));
     }
     private void getAllUser(){
@@ -65,6 +79,7 @@ public class UrlListActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void getUser(String email){
         DocumentReference docRef = db.collection("users").document(email);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -75,9 +90,20 @@ public class UrlListActivity extends AppCompatActivity {
                     if (document.exists()) {
                         ArrayList<String> group = (ArrayList<String>) document.get("url");
                         arrayList.addAll(group);
+                        //If arrayList more than 0
+                        if(arrayList.size()>0){
+                            textView.setVisibility(View.GONE);
+                            imageView.setVisibility(View.GONE);
+                        }else {
+                            textView.setVisibility(View.VISIBLE);
+                            imageView.setVisibility(View.VISIBLE);
+                        }
                         Log.d("ArrayList",arrayList.toString());
-                        adapter = new ArrayAdapter<String>(UrlListActivity.this, android.R.layout.simple_list_item_1, arrayList);
-                        listView.setAdapter(adapter);
+                        adapter = new UrlListAdapter(arrayList,UrlListActivity.this);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(UrlListActivity.this));
+                        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+                        adapter.notifyDataSetChanged();
                         Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
                     } else {
                         Log.d("DocumentSnapshot data: ","No such document");
@@ -88,6 +114,7 @@ public class UrlListActivity extends AppCompatActivity {
             }
         });
     }
+
     private void setActionBar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -98,5 +125,27 @@ public class UrlListActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void deleteUser(String email){
+        db.collection("users").document(email)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("DeleteUser", "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("DeleteUser", e.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

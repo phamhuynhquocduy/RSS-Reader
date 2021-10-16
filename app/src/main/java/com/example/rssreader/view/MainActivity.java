@@ -1,6 +1,7 @@
 package com.example.rssreader.view;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -8,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rssreader.R;
 import com.example.rssreader.adapter.RssFeedListAdapter;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String name,image,email;
     private ArrayList<String> arrayList;
+    private static final int REQUEST_CODE = 1000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,12 +119,12 @@ public class MainActivity extends AppCompatActivity {
                     .into(imagePhoto);
         }
     }
-    private void doStuff(EditText editText){
+    private void doStuff(String url){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 //do your work
-                String urlLink = editText.getText().toString();
+                String urlLink = url;
                 try {
                     //if not enter http or https it will be added
                     if(!urlLink.startsWith("http://") && !urlLink.startsWith("https://"))
@@ -234,9 +238,9 @@ public class MainActivity extends AppCompatActivity {
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                doStuff(editText);
+                                doStuff(editText.getText().toString());
                                 if(checkBox.isChecked()){
-                                    saveURL(editText.getText().toString());
+                                    getDocument(email,editText.getText().toString());
                                 }
                                 dialog.dismiss();
                             }
@@ -246,7 +250,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_save:
                         Intent intentUrl = new Intent(MainActivity.this, UrlListActivity.class);
                         intentUrl.putExtra("email",email);
-                        startActivity(intentUrl);
+                        intentUrl.putExtra("name",name);
+                        intentUrl.putExtra("image",image);
+                        startActivityIfNeeded(intentUrl,REQUEST_CODE);
                         return false;
                     case R.id.navigation_log_out:
                         Intent intentLogout = new Intent(MainActivity.this, LoginActivity.class);
@@ -276,24 +282,24 @@ public class MainActivity extends AppCompatActivity {
 
     //Save URL
     private void saveURL(String url){
-        getDocument(email);
         arrayList.add(url);
 
         Map<String, Object> user = new HashMap<>();
         user.put("url",arrayList);
-
         db.collection("users").document(String.valueOf(email))
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("AddData", "DocumentSnapshot successfully written!");
+                        Toast.makeText(getApplicationContext(),"Helooooooo",Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d("Error writing document", e.getMessage());
+                        Toast.makeText(getApplicationContext(),"Helooooooo2",Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -306,24 +312,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getDocument(String document){
-        DocumentReference docRef = db.collection("users").document(document);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        ArrayList<String> group = (ArrayList<String>) document.get("url");
-                        arrayList.addAll(group);
-                        Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
+    private void getDocument(String document,String url){
+
+            arrayList.clear();
+
+            DocumentReference docRef = db.collection("users").document(document);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            ArrayList<String> group = (ArrayList<String>) document.get("url");
+                            arrayList.addAll(group);
+                            saveURL(url);
+                            Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
+                        } else {
+                            Log.d("DocumentSnapshot data: ","No such document");
+                        }
                     } else {
-                        Log.d("DocumentSnapshot data: ","No such document");
+                        Log.d(TAG, "Get Failed With ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "Get Failed With ", task.getException());
                 }
+            });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_CODE) {
+                if (resultCode == Activity.RESULT_OK) {
+                    doStuff(data.getStringExtra("result"));
             }
-        });
+        }
     }
 }
