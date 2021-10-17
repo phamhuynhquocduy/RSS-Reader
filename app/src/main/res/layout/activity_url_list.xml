@@ -7,13 +7,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".view.UrlListActivity">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_background">
-    </androidx.appcompat.widget.Toolbar>
-
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_background">
+        </androidx.appcompat.widget.Toolbar>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dữ liệu RSS"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold">
+        </TextView>
+    </FrameLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
