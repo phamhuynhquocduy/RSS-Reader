@@ -25,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private IntroFragmentAdapter introFragmentAdapter;
     private ProgressDialog mProgress;
+    private DotsIndicator dotsIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.pager);
         introFragmentAdapter = new IntroFragmentAdapter(this);
         viewPager.setAdapter(introFragmentAdapter);
+        dotsIndicator = findViewById(R.id.dots_indicator);
+        dotsIndicator.setViewPager2(viewPager);
 
         //Progress dialog
         mProgress = new ProgressDialog(this);

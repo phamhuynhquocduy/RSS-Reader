@@ -13,12 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
-import com.example.rssreader.model.RssFeedModel;
-import com.example.rssreader.view.MainActivity;
-
 import java.util.List;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.ItemHolder>{
 
