@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class UrlListActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private TextView textView;
     private ImageView imageView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class UrlListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_url_list);
 
         recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.progressBar);
         toolbar = findViewById(R.id.toolbar);
         textView = findViewById(R.id.tvUrl);
         imageView=findViewById(R.id.imageUrl);
@@ -90,14 +93,9 @@ public class UrlListActivity extends AppCompatActivity {
                     if (document.exists()) {
                         ArrayList<String> group = (ArrayList<String>) document.get("url");
                         arrayList.addAll(group);
-                        //If arrayList more than 0
-                        if(arrayList.size()>0){
-                            textView.setVisibility(View.GONE);
-                            imageView.setVisibility(View.GONE);
-                        }else {
-                            textView.setVisibility(View.VISIBLE);
-                            imageView.setVisibility(View.VISIBLE);
-                        }
+                        progressBar.setVisibility(View.GONE);
+                        textView.setVisibility(View.GONE);
+                        imageView.setVisibility(View.GONE);
                         Log.d("ArrayList",arrayList.toString());
                         adapter = new UrlListAdapter(arrayList,UrlListActivity.this);
                         recyclerView.setAdapter(adapter);
@@ -107,6 +105,9 @@ public class UrlListActivity extends AppCompatActivity {
                         Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
                     } else {
                         Log.d("DocumentSnapshot data: ","No such document");
+                        progressBar.setVisibility(View.GONE);
+                        textView.setVisibility(View.VISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Log.d(TAG, "Get Failed With ", task.getException());

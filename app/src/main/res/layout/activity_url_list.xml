@@ -56,6 +56,12 @@
                 android:text="Không có đường dẫn"
                 android:textSize="18sp"/>
         </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
     </FrameLayout>
 
 </LinearLayout>

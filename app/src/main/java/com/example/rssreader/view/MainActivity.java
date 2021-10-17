@@ -285,14 +285,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("AddData", "DocumentSnapshot successfully written!");
-                        Toast.makeText(getApplicationContext(),"Helooooooo",Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d("Error writing document", e.getMessage());
-                        Toast.makeText(getApplicationContext(),"Helooooooo2",Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -322,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("DocumentSnapshot data: ", String.valueOf(document.getData()));
                         } else {
                             Log.d("DocumentSnapshot data: ","No such document");
+                            saveURL(url);
                         }
                     } else {
                         Log.d(TAG, "Get Failed With ", task.getException());
