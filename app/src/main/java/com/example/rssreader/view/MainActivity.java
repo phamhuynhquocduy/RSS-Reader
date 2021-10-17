@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                             imageFeed.setVisibility(View.VISIBLE);
                         }
                         recyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
+                        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
                     }
                 });
             }
@@ -168,22 +170,13 @@ public class MainActivity extends AppCompatActivity {
 
             Element root = doc.getDocumentElement();
             NodeList nodeList  = root.getElementsByTagName("item");
-            NodeList nodeListDescription =root.getElementsByTagName("description");
 
             for( int i=0;i<nodeList.getLength();i++) {
-                String CData= nodeListDescription.item(i+1).getTextContent();
-                Log.d("CData",CData);
-                // Get link image
-                Pattern p = Pattern.compile("<img src=\"([^\"]+)");
-                Matcher matcher = p.matcher (CData);
-                String image = "";
-                if (matcher.find()) {
-                    image = matcher.group (1);
-                }
                 Element element = (Element) nodeList.item(i);
                 String title = getValue(element, "title");
                 String link = getValue(element, "link");
-                mFeedModelList.add(new RssFeedModel(title,link,null,image));
+                String date =getValue(element,"pubDate");
+                mFeedModelList.add(new RssFeedModel(title,link,date));
             }
         }
             catch (Exception e){

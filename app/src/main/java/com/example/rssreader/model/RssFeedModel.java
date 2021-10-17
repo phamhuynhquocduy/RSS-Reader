@@ -6,24 +6,23 @@ public class RssFeedModel implements Serializable {
 
     private String title;
     private String link;
-    private String description;
-    private String image;
+    private String date;
 
-    public RssFeedModel(String title, String link, String description, String image) {
+    public RssFeedModel(String title, String link, String date) {
         this.title = title;
         this.link = link;
-        this.description = description;
-        this.image = image;
+        this.date = date;
     }
+
     @Override
     public String toString() {
         return "RssFeedModel{" +
                 "title='" + title + '\'' +
                 ", link='" + link + '\'' +
-                ", description='" + description + '\'' +
-                ", image='" + image + '\'' +
+                ", description='" + date + '\'' +
                 '}';
     }
+
     public String getTitle() {
         return title;
     }
@@ -40,19 +39,12 @@ public class RssFeedModel implements Serializable {
         this.link = link;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDate() {
+        return date;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 }

@@ -43,16 +43,8 @@ public class RssFeedListAdapter extends RecyclerView.Adapter<RssFeedListAdapter.
     public void onBindViewHolder(FeedModelViewHolder holder, int position) {
         final RssFeedModel rssFeedModel = mRssFeedModels.get(position);
         ((TextView)holder.rssFeedView.findViewById(R.id.tvFeedTitle)).setText(rssFeedModel.getTitle());
-        ((TextView)holder.rssFeedView.findViewById(R.id.tvFeedDescription)).setText(rssFeedModel.getDescription());
+        ((TextView)holder.rssFeedView.findViewById(R.id.tvFeedDate)).setText(rssFeedModel.getDate());
         holder.rssFeedView.findViewById(R.id.image);
-        if(rssFeedModel.getImage()!=""){
-            Picasso.get()
-                    .load(rssFeedModel.getImage())
-                    .error(R.drawable.error)
-                    .placeholder(R.drawable.placeholder)
-                    .fit()
-                    .into((ImageView) holder.rssFeedView.findViewById(R.id.image));
-        }
         holder.rssFeedView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
